@@ -21,6 +21,7 @@
 #include <setjmp.h>
 #include <signal.h>
 #include <paths.h>
+#include "getaddrinfo.h"
 #if defined __UCLIBC__ /* TODO: and glibc? */
 /* use inlined versions of these: */
 # define sigfillset(s)    __sigfillset(s)
