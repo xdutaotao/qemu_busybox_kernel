@@ -57,3 +57,17 @@ _install/
 linux-4.4*/
 *.gz
 *.bz2
+
+Config.in
+Kbuild
+.config
+.kernelrelease
+docs/
+include/
+scripts/
+busybox.*
+applet_tables
+usage
+usage_pod
+busybox
+busybox_unstripped
