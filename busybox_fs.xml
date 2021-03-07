@@ -1,4 +1,4 @@
-<domain type="kvm">
+<domain type="kvm" xmlns:qemu='http://libvirt.org/schemas/domain/qemu/1.0'>
         <name>busybox_fs</name>
         <memory>512000</memory>
         <currentMemory>512000</currentMemory>

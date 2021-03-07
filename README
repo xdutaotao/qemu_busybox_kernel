@@ -5,6 +5,8 @@ busybox_fs.xml: 这是libvirt的virsh配置文件， 配置的是virtio来模拟
 
 qemu_x86.*sh: 这是直接用qemu-system-x86_64来执行的脚本.
 
+busybox_fs_dump.xml： 这是目前完整的kvm虚拟机dump出来的xml文件。 可以基于这个文件作为模板进行修改。
+
 注意： 
 1. 注释的hda必须有和disk中的ide配合使用， vda必须和virtio配合使用
 2. console中pty配置必须和kernel段中的cmdline配合，才能有控制台
@@ -27,3 +29,12 @@ nsole=ttyS0,115200 root=/dev/vda rootfs=ext4 rw -device piix3-usb-uhci,id=usb,bu
 irtio-blk-pci,scsi=off,bus=pci.0,addr=0x3,drive=drive-virtio-disk0,id=virtio-disk0,bootindex=1 -netdev tap,fd=28,id=hostnet0,vhost=on,vhostfd=29 -device virtio-net-pci,netdev=hostnet0,id=net0,mac=00:16:3
 e:5d:aa:22,bus=pci.0,addr=0x2 -chardev pty,id=charserial0 -device isa-serial,chardev=charserial0,id=serial0 -device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x4 -sandbox on,obsolete=deny,elevatepriv
 ileges=deny,spawn=deny,resourcecontrol=deny -msg timestamp=on
+
+
+如果想用gdb来调试内核， 还是需要follow下面的方法来修改xml文件： 注意<domain>中的xml规范必须包含，否则qemu相关的字段不会添加上去
+https://www.apriorit.com/dev-blog/597-debug-linux-kernel-qemu-libvirt
+
+从native的qemu命令行转换为libvirt的xml文件
+sudo virsh domxml-from-native qemu-argv ./qemu.args
+
+
