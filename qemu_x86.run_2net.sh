@@ -16,6 +16,7 @@ qemu-system-x86_64 \
     -nic tap,ifname=tap0,script=no,downscript=no \
     -nic tap,ifname=tap1,script=no,downscript=no \
     -enable-kvm \
+    -S -s \
     -nographic
 
     #-nographic \

@@ -1,3 +1,29 @@
 busybox-1.32.0.tar.bz2
 linux-4.4.60.tar.gz
 
+busybox_fs.xml: 这是libvirt的virsh配置文件， 配置的是virtio来模拟disk，net，pci，内存balloon. etc.
+
+qemu_x86.*sh: 这是直接用qemu-system-x86_64来执行的脚本.
+
+注意： 
+1. 注释的hda必须有和disk中的ide配合使用， vda必须和virtio配合使用
+2. console中pty配置必须和kernel段中的cmdline配合，才能有控制台
+3. 为了统一，disk还是选用raw格式， 统一用qemu和libvirt两种方式启动
+4. 增加了gdb调试的cmdline
+
+
+virsh命令
+1.根据xml根据xml定义busybox_fs虚拟机：sudo virsh define ./busybox_fs.xml
+2.启动：sudo virsh start busybox_fs
+3.查看: sudo virsh list --all
+4.连console: sudo virsh console busybox_fs, 或者用ssh去登录， 都是可以的
+
+More:
+virsh启动kvm之后，实际的执行命令
+qemu-system-x86_64 -enable-kvm -name guest=busybox_fs,debug-threads=on -S -object secret,id=masterKey0,format=raw,file=/var/lib/libvirt/qemu/domain-11-busybox_fs/master-key.aes -machine pc-i440fx-3.1,acc
+el=kvm,usb=off,dump-guest-core=off -m 500 -realtime mlock=off -smp 2,sockets=2,cores=1,threads=1 -uuid 9b8f521a-b9e7-452a-b6e7-7f2eea5be598 -display none -no-user-config -nodefaults -chardev socket,id=ch
+armonitor,fd=26,server,nowait -mon chardev=charmonitor,id=monitor,mode=control -rtc base=localtime -no-shutdown -boot strict=on -kernel /home/osboxes/code/linux-4.4.60/arch/x86_64/boot/bzImage -append co
+nsole=ttyS0,115200 root=/dev/vda rootfs=ext4 rw -device piix3-usb-uhci,id=usb,bus=pci.0,addr=0x1.0x2 -drive file=/home/osboxes/code/image/busybox_fs.raw,format=raw,if=none,id=drive-virtio-disk0 -device v
+irtio-blk-pci,scsi=off,bus=pci.0,addr=0x3,drive=drive-virtio-disk0,id=virtio-disk0,bootindex=1 -netdev tap,fd=28,id=hostnet0,vhost=on,vhostfd=29 -device virtio-net-pci,netdev=hostnet0,id=net0,mac=00:16:3
+e:5d:aa:22,bus=pci.0,addr=0x2 -chardev pty,id=charserial0 -device isa-serial,chardev=charserial0,id=serial0 -device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x4 -sandbox on,obsolete=deny,elevatepriv
+ileges=deny,spawn=deny,resourcecontrol=deny -msg timestamp=on

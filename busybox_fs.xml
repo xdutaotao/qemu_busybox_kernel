@@ -1,0 +1,73 @@
+<domain type="kvm">
+        <name>busybox_fs</name>
+        <memory>512000</memory>
+        <currentMemory>512000</currentMemory>
+        <vcpu>2</vcpu>
+
+        <os>
+                <type arch='x86_64' machine='pc'>hvm</type>
+                <kernel>/home/osboxes/code/linux-4.4.60/arch/x86_64/boot/bzImage</kernel>
+                <!--
+                <cmdline>console=ttyS0,115200 root=/dev/sda rootfs=ext4 rw</cmdline>
+                --> 
+                <cmdline>console=ttyS0,115200 root=/dev/vda rootfs=ext4 rw</cmdline>
+                <boot dev='hd'/>
+        </os>
+
+        <features>
+                <acpi/>
+                <apic/>
+                <pae/>
+        </features>
+
+        <clock offset='localtime'/>
+        <on_poweroff>destroy</on_poweroff>
+        <on_reboot>restart</on_reboot>
+        <on_crash>destroy</on_crash>
+
+        <devices>
+                <emulator>/usr/bin/kvm</emulator>
+                <disk type='file' device='disk'>
+                        <!--
+                        <driver name='qemu' type='qcow2'/>
+                        <source file='/home/osboxes/code/image/busybox_fs.qcow2'/>
+                        -->
+                        <driver name='qemu' type='raw'/>
+                        <source file='/home/osboxes/code/image/busybox_fs.raw'/>
+
+                        <!-- 
+                        <target dev='hda' bus='ide'/>
+                        -->  
+                        <target dev='vda' bus='virtio'/>
+                </disk>
+
+                <!--
+                <disk type='file' device='cdrom'>
+                        <source file='/home/zhangpeng/centos.iso'/>
+                        <target dev='hdb' bus='ide'/>
+                </disk>
+                <graphics type='vnc' port='-1' autoport='yes' listen='0.0.0.0' keymap='en-us'/>
+                -->
+
+                <interface type='bridge'>
+                        <source bridge='br0'/>
+                        <mac address="00:16:3e:5d:aa:22"/>
+                        <model type="virtio"/>
+                </interface>
+
+                <input type='mouse' bus='ps2'/>
+                <serial type="pty">
+                    <target port="0" />
+                </serial>
+                <console type="pty">
+                    <target type="serial" port="0" />
+                </console>
+        </devices>
+        <qemu:commandline>
+            <qemu:arg value="-s"/>
+            <!--
+                <qemu:arg value="-gdb"/>
+                <qemu:arg value="tcp:1234"/>
+            -->
+        </qemu:commandline>
+</domain>
